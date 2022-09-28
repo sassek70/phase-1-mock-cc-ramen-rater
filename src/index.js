@@ -1,4 +1,4 @@
-
+let activeMenuItem = null
 
 //Get all the info
 fetch('http://localhost:3000/ramens')
@@ -45,6 +45,8 @@ function updateDisplay(menuItem) {
     itemRating.textContent = menuItem.rating
     itemComment.textContent = menuItem.comment
 
+    activeMenuItem = menuItem
+
 }
 
 
@@ -59,8 +61,8 @@ createButton.addEventListener('click', (e) => {
 //Edit ramen
 const editButton = document.getElementsByTagName('input')[6]
 editButton.addEventListener('click', (e) => {
-    editRamen()  
     e.preventDefault()
+    editRamen()  
 })
 
 
@@ -101,16 +103,19 @@ postNewRamen(`http://localhost:3000/ramens`, newRamenObj)
 
 
 //Edit rating and comment
-function editRamen (menuItem){
+function editRamen (){
     const form = document.getElementById('edit-ramen')
-    const editRating = document.getElementById('new-rating')
-    const editComment = document.getElementById('new-comment')
+    const editRating = form.querySelector('#new-rating')
+    const editComment = form.querySelector('#new-comment')
 
-    menuItem.rating = editRating.value,
-    menuItem.comment = editComment.value,
+    activeMenuItem.rating = editRating.value,
+    activeMenuItem.comment = editComment.value,
+    console.log(editRating)
         
-    patchRamen(`http://localhost:3000/ramens`, menuItem)
-    form.rest() 
+    patchRamen(`http://localhost:3000/ramens/${activeMenuItem.id}`, activeMenuItem)
+    .then(res => res.json())
+    .then(updatedMenuItem => updateDisplay(updatedMenuItem))
+    form.reset() 
 }
 
 
